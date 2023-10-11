@@ -1,13 +1,14 @@
-import { ethers } from "hardhat";
+import { ethers } from 'hardhat';
 
 async function main() {
-  const Randao = await ethers.getContractFactory("Randao");
   try {
-    const randao = await Randao.deploy();
-    await randao.deployed();
-    console.log("Randao deployed to ", randao.address);
-  } catch(err) { 
-    console.log("Randao deploy error: ", err);
+    const randao = await ethers.deployContract('Randao');
+
+    await randao.waitForDeployment();
+
+    console.log(`Randao deployed to ${randao.target}`);
+  } catch (err) {
+    console.log('Randao deploy error: ', err);
   }
 }
 

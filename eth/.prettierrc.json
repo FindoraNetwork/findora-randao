@@ -1,0 +1,30 @@
+{
+    "overrides": [
+        {
+            "files": [
+                "*.js",
+                "*.ts"
+            ],
+            "options": {
+                "singleQuote": true,
+                "semi": true,
+                "trailingComma": "all",
+                "bracketSpacing": true,
+                "arrowParens": "always"
+            }
+        },
+        {
+            "files": "*.sol",
+            "options": {
+                "plugins": [
+                    "prettier-plugin-solidity"
+                ],
+                "parser": "solidity-parse",
+                "singleQuote": false,
+                "semi": true,
+                "trailingComma": "all",
+                "bracketSpacing": true
+            }
+        }
+    ]
+}

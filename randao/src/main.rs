@@ -18,14 +18,23 @@ use prometheus::{
     labels, opts, register_gauge, register_histogram_vec, Encoder, Gauge, HistogramVec, TextEncoder,
 };
 use randao::config::Opts;
-use randao::{RANDAO_CAMPAIGNS, RANDAO_CONF, RANDAO_KEYS};
 use randao::{
     config::*, contract::*, error::Error, utils::*, BlockClient, WorkThd, ONGOING_CAMPAIGNS,
 };
-use std::{fs::{create_dir, create_dir_all}, net::SocketAddr, ops::{Add, AddAssign, SubAssign}, path::PathBuf, str::FromStr, sync::{
+use randao::{RANDAO_CAMPAIGNS, RANDAO_CONF, RANDAO_KEYS};
+use std::{
+    fs::{create_dir, create_dir_all},
+    net::SocketAddr,
+    ops::{Add, AddAssign, SubAssign},
+    path::PathBuf,
+    str::FromStr,
+    sync::{
         atomic::{AtomicBool, Ordering as Order},
         Arc, Mutex,
-    }, thread::{self, sleep}, time::Duration};
+    },
+    thread::{self, sleep},
+    time::Duration,
+};
 use web3::types::{H256, U256};
 
 // const CHECK_CNT: u8 = 5;
@@ -79,11 +88,10 @@ impl MainThread {
             "Prometheus Listening on http://{}",
             self.client.lock().unwrap().config.prometheus_listen.clone()
         );
-        let addr = SocketAddr::from_str(&self.client.lock().unwrap().config.prometheus_listen.clone()).unwrap();
-        let serve_future = Server::bind(
-            &addr,
-        )
-        .serve(make_service_fn(|_| async {
+        let addr =
+            SocketAddr::from_str(&self.client.lock().unwrap().config.prometheus_listen.clone())
+                .unwrap();
+        let serve_future = Server::bind(&addr).serve(make_service_fn(|_| async {
             Ok::<_, hyper::Error>(service_fn(prometheus_http_svr_req))
         }));
 
@@ -139,19 +147,18 @@ fn main() -> anyhow::Result<()> {
     println!("opts: {:?}", opts);
 
     *RANDAO_CAMPAIGNS.lock().unwrap() = opts.campaigns;
-    println!("campaigns: {:?}",  *RANDAO_CAMPAIGNS.lock().unwrap());
+    println!("campaigns: {:?}", *RANDAO_CAMPAIGNS.lock().unwrap());
     *RANDAO_CONF.lock().unwrap() = opts.config;
-    println!("config: {:?}",  *RANDAO_CONF.lock().unwrap());
+    println!("config: {:?}", *RANDAO_CONF.lock().unwrap());
     *RANDAO_KEYS.lock().unwrap() = opts.keys;
-    println!("keys: {:?}",  *RANDAO_KEYS.lock().unwrap());
-
+    println!("keys: {:?}", *RANDAO_KEYS.lock().unwrap());
 
     let randao_conf = PathBuf::from(RANDAO_CONF.lock().unwrap().to_owned());
     if !randao_conf.exists() || !randao_conf.is_file() {
         anyhow::bail!("randao folder is incorrect!!!");
     }
     let randao_campaigns = PathBuf::from(RANDAO_CAMPAIGNS.lock().unwrap().to_owned());
-    if !randao_campaigns.exists(){
+    if !randao_campaigns.exists() {
         create_dir_all(&randao_campaigns)?;
     } else if !randao_campaigns.is_dir() {
         anyhow::bail!("randao folder is incorrect!!!");
@@ -162,7 +169,6 @@ fn main() -> anyhow::Result<()> {
     } else if !randao_keys.is_dir() {
         anyhow::bail!("key folder is incorrect!!!");
     }
-
 
     let randao_cfg: Config = Config::parse_from_file(&randao_conf);
     let randao_cfg2 = randao_cfg.clone();
@@ -537,7 +543,13 @@ fn test_contract_new_campaign() {
         .unwrap();
     println!("my_bounty :{:?}", my_bounty);
 
-    let mut work_thd = WorkThd::new(campaign_id, info, &client, config, RANDAO_CAMPAIGNS.lock().unwrap().to_owned());
+    let mut work_thd = WorkThd::new(
+        campaign_id,
+        info,
+        &client,
+        config,
+        RANDAO_CAMPAIGNS.lock().unwrap().to_owned(),
+    );
     let (campaign_id, randao_num, my_bounty) = work_thd.do_task().unwrap();
 
     println!(
