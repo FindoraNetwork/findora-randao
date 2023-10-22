@@ -59,13 +59,13 @@ Work thread:
 
 Purpose: participate in one single campaign until the campaign completes.
 
-    1> Keep compaign information (passed in by main thread) on hand.
+    1> Keep campaign information (passed in by main thread) on hand.
     
     2> Commit to the campaign.
         - Generate a random secret u256 number `_s` and call `shaCommit` on Randao contract to calculate the commitment (_hs).
         - Call `commit` on Randao contract with proper `_campaignID` and `_hs` until get the transaction receipt.
         - End the work thread if the call fails and print proper log message.
-            - Example error: "Commit failed, campaignID=12, err=VM Exception while processing transaction: Too late to commit to compaign"
+            - Example error: "Commit failed, campaignID=12, err=VM Exception while processing transaction: Too late to commit to campaign"
         - Update (increment) prometheus metrics (e.g., "ONGOING_CAMPAIGNS" to track total number of ongoing campaigns)
         - Print commit information.
             Example info: "Commit succeed, campaignID=12, tx=0x3e8073efc8951034bcf6b0888be845983998a8898d541e9a58f57b09d77af806 gasPrice=10000000000"
@@ -84,10 +84,10 @@ Purpose: participate in one single campaign until the campaign completes.
         - Wait until height `campaign.bnum`.
             - Make eth-call to `getRandom` on Randao contract with `_campaignID` to get the random number.
             - If eth-call fails, print error information.
-                - Example error: "Get random failed, campaignID=12, err=VM Exception while processing transaction: Compaign is not settled"
+                - Example error: "Get random failed, campaignID=12, err=VM Exception while processing transaction: campaign is not settled"
         - Call `getMyBounty` on Randao contract with `_campaignID` and make sure that the call succeed.
             - Print error message if it's necessary for debugging.
-            - Example error: "Get bounty failed, campaignID=12, err=VM Exception while processing transaction: Compaign is not in the bounty phase"
+            - Example error: "Get bounty failed, campaignID=12, err=VM Exception while processing transaction: campaign is not in the bounty phase"
         - Update (decrement) prometheus metrics (e.g., "ONGOING_CAMPAIGNS" to track total number of ongoing campaigns)
         - Print bounty information.
             Example info: "Bounty claimed, campaignID=12, bounty=1.5 tx=0xa31a1e4f6f2a089ca57323c6491c0aba4274a4c81be36cc74728cd9c1f16562b gasPrice=10000000000"

@@ -6,11 +6,13 @@ interface IRandao {
     event LogCampaignAdded(
         uint256 indexed campaignID,
         address indexed from,
+        uint256 currbNum,
         uint256 indexed bnum,
         uint256 deposit,
         uint16 commitBalkline,
         uint16 commitDeadline,
-        uint256 bountypot
+        uint256 bountypot,
+        uint256 maxParticipant
     );
 
     event LogFollow(
@@ -29,6 +31,8 @@ interface IRandao {
         address indexed from,
         uint256 secret
     );
+
+    event LogGetRandom(uint256 indexed CampaignId, uint256 indexed random);
 
     struct Participant {
         uint256 secret;
@@ -65,6 +69,7 @@ interface IRandao {
         uint256 bountypot;
         uint32 commitNum;
         uint32 revealsNum;
+        uint256 maxParticipant;
         mapping(address => Consumer) consumers;
         mapping(address => Participant) participants;
         mapping(bytes32 => bool) commitments;
@@ -74,7 +79,8 @@ interface IRandao {
         uint256 _bnum,
         uint256 _deposit,
         uint16 _commitBalkline,
-        uint16 _commitDeadline
+        uint16 _commitDeadline,
+        uint256 _maxTxFee
     ) external payable returns (uint256 _campaignID);
 
     function getCampaign(
@@ -97,4 +103,6 @@ interface IRandao {
     function getMyBounty(uint256 _campaignID) external returns (uint256);
 
     function refundBounty(uint256 _campaignID) external;
+
+    function numCampaigns() external view returns (uint256);
 }

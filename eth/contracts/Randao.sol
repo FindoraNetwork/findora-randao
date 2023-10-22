@@ -5,7 +5,7 @@ import "./IRandao.sol";
 
 // version 1.0
 contract Randao is IRandao {
-    uint256 public numCampaigns;
+    uint256 public _numCampaigns;
     mapping(uint256 => Campaign) public campaigns;
     address public founder;
 
@@ -14,9 +14,10 @@ contract Randao is IRandao {
         _;
     }
 
-    modifier moreThanZero(uint256 _deposit) {
+    modifier moreThanZero(uint256 _deposit, uint256 bounty) {
         // if (_deposit <= 0) revert();
         require(_deposit > 0, "Invalid deposit");
+        require(bounty > 0, "Invalid bounty");
         _;
     }
 
@@ -60,15 +61,20 @@ contract Randao is IRandao {
         uint256 _bnum,
         uint256 _deposit,
         uint16 _commitBalkline,
-        uint16 _commitDeadline
+        uint16 _commitDeadline,
+        uint256 _maxTxFee
     )
         external
         payable
         timeLineCheck(_bnum, _commitBalkline, _commitDeadline)
-        moreThanZero(_deposit)
         returns (uint256 _campaignID)
     {
-        _campaignID = numCampaigns++;
+        uint256 maxParticipant = _deposit < msg.value
+            ? _deposit / _maxTxFee / 4
+            : msg.value / _maxTxFee / 4;
+        require(maxParticipant > 0, "_deposit or bounty is too less!!!");
+
+        _campaignID = _numCampaigns++;
         Campaign storage c = campaigns[_campaignID];
         c.bnum = _bnum;
         c.deposit = _deposit;
@@ -76,15 +82,23 @@ contract Randao is IRandao {
         c.commitDeadline = _commitDeadline;
         c.bountypot = msg.value;
         c.consumers[msg.sender] = Consumer(msg.sender, msg.value);
+        c.maxParticipant = maxParticipant;
+
         emit LogCampaignAdded(
             _campaignID,
             msg.sender,
+            block.number,
             _bnum,
             _deposit,
             _commitBalkline,
             _commitDeadline,
-            msg.value
+            msg.value,
+            maxParticipant
         );
+    }
+
+    function numCampaigns() external view returns (uint256) {
+        return _numCampaigns;
     }
 
     function getCampaign(
@@ -155,11 +169,11 @@ contract Randao is IRandao {
     ) {
         require(
             block.number >= _bnum - _commitBalkline,
-            "Too early to commit to compaign"
+            "Too early to commit to campaign"
         );
         require(
             block.number <= _bnum - _commitDeadline,
-            "Too late to commit to compaign"
+            "Too late to commit to campaign"
         );
         _;
     }
@@ -175,11 +189,14 @@ contract Randao is IRandao {
         beBlank(c.participants[msg.sender].commitment)
     {
         if (c.commitments[_hs]) {
-            revert("Already committed to compaign");
+            revert("Already committed to campaign!!!");
+        } else if (c.maxParticipant == 0) {
+            revert("More than maxParticipant!!!");
         } else {
             c.participants[msg.sender] = Participant(0, _hs, 0, false, false);
             c.commitNum++;
             c.commitments[_hs] = true;
+            c.maxParticipant--;
             emit LogCommit(_campaignID, msg.sender, _hs);
         }
     }
@@ -239,21 +256,24 @@ contract Randao is IRandao {
     }
 
     modifier bountyPhase(uint256 _bnum) {
-        require(block.number >= _bnum, "Compaign is not in the bounty phase");
+        require(block.number >= _bnum, "Campaign is not in the bounty phase");
         _;
     }
 
     modifier campaignSettled(uint32 _commitNum, uint32 _revealsNum) {
         require(
             _commitNum == _revealsNum && _commitNum > 0,
-            "Compaign is not settled"
+            "Campaign is not settled"
         );
         _;
     }
 
     function getRandom(uint256 _campaignID) external returns (uint256) {
         Campaign storage c = campaigns[_campaignID];
-        return returnRandom(c);
+        uint256 random = returnRandom(c);
+        emit LogGetRandom(_campaignID, random);
+
+        return random;
     }
 
     function returnRandom(
@@ -283,7 +303,7 @@ contract Randao is IRandao {
         Campaign storage c,
         Participant storage p
     ) internal bountyPhase(c.bnum) returns (uint256) {
-        require(!p.rewarded, "Bouty already claimed");
+        require(!p.rewarded, "Bounty already claimed");
         uint256 share = 0;
         if (c.revealsNum > 0) {
             if (p.revealed) {
@@ -332,7 +352,7 @@ contract Randao is IRandao {
     modifier campaignFailed(uint32 _commitNum, uint32 _revealsNum) {
         require(
             _commitNum > _revealsNum,
-            "Bounty is not refundable on successful compaign"
+            "Bounty is not refundable on successful campaign"
         );
         _;
     }

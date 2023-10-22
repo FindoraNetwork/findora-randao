@@ -17,7 +17,9 @@
     "lint": "run-s lint:ts lint:sol",
     "lint:fix": "run-s lint:tsfix lint:solfix",
     "clean": "rm -rf build",
+    "hardhat:local": "hardhat --network local",
     "hardhat:hyprtest": "hardhat --network hyprtest",
+    "dep:local": "yarn hardhat:local run scripts/deploy.ts",
     "dep:hyprtest": "yarn hardhat:hyprtest run scripts/deploy.ts"
   },
   "keywords": [],

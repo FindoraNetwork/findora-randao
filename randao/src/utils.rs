@@ -92,8 +92,7 @@ pub fn check_campaign_info(
 
     println!("{:?}, block_number :{:?}", campaign_info, block_number);
 
-    if campaign_info.deposit.as_u128() == 0 
-    {
+    if campaign_info.deposit.as_u128() == 0 {
         println!("check_campaign_info err 2");
         return false;
     }
