@@ -6,8 +6,8 @@ interface IRandao {
     event LogCampaignAdded(
         uint256 indexed campaignID,
         address indexed from,
-        uint256 currbNum,
-        uint256 indexed bnum,
+        uint256 indexed currbNum,
+        uint256 bnum,
         uint256 deposit,
         uint16 commitBalkline,
         uint16 commitDeadline,
