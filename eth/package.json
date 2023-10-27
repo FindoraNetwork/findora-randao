@@ -20,7 +20,9 @@
     "hardhat:dev": "hardhat --network local",
     "hardhat:hyprtest": "hardhat --network hyprtest",
     "dep:dev": "yarn hardhat:dev run scripts/deploy.ts",
-    "dep:hyprtest": "yarn hardhat:hyprtest run scripts/deploy.ts"
+    "dep:hyprtest": "yarn hardhat:hyprtest run scripts/deploy.ts",
+    "ts:dev": "yarn hardhat:dev run scripts/transfer.ts",
+    "start": "yarn hardhat node"
   },
   "keywords": [],
   "author": "",

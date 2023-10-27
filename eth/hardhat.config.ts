@@ -14,26 +14,16 @@ const config: HardhatUserConfig = {
         {
           privateKey:
             '0xb501fc5879f214ee8be2832e43955ac0f19e20d1f7e33436d6746ac889dc043d',
-          balance: '100000000000000000000',
-        },
-        {
-          privateKey:
-            '0x523170AAE57904F24FFE1F61B7E4FF9E9A0CE7557987C2FC034EACB1C267B4AE',
-          balance: '100000000000000000000',
-        },
-        {
-          privateKey:
-            '0x67195c963ff445314e667112ab22f4a7404bad7f9746564eb409b9bb8c6aed32',
-          balance: '100000000000000000000',
+          balance: '1000000000000000000000000000000000',
         },
       ],
-      blockGasLimit: 100000000000,
-      gasPrice: 1,
+      blockGasLimit: 100000000000000,
+      gasPrice: 1000000,
       chainId: 2152,
-      initialBaseFeePerGas: 1,
+      initialBaseFeePerGas: 1000000,
       mining: {
-        auto: true,
-        interval: 5000,
+        auto: false,
+        interval: 3000,
       },
     },
     local: {
@@ -67,6 +57,14 @@ const config: HardhatUserConfig = {
     hyprtest: {
       url: 'http://testnet-proposer0.hypr.network:8545',
       accounts: [
+        '0xb501fc5879f214ee8be2832e43955ac0f19e20d1f7e33436d6746ac889dc043d',
+      ],
+    },
+    gsc: {
+      url: 'http://gsc-mainnet-us-west-2-full-001-open.prod.findora.org:8545',
+      chainId: 1204,
+      accounts: [
+        '0x8ea5974517769211efd4af5814ea1600ba888b7786f7df5e26dc3d6bab6822bc',
         '0xb501fc5879f214ee8be2832e43955ac0f19e20d1f7e33436d6746ac889dc043d',
       ],
     },
