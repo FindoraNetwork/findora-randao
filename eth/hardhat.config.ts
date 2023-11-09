@@ -14,12 +14,12 @@ const config: HardhatUserConfig = {
         {
           privateKey:
             '0xb501fc5879f214ee8be2832e43955ac0f19e20d1f7e33436d6746ac889dc043d',
-          balance: '1000000000000000000000000000000000',
+          balance: '100000000000000000000000000',
         },
       ],
       blockGasLimit: 100000000000000,
       gasPrice: 1000000,
-      chainId: 2152,
+      chainId: 1204,
       initialBaseFeePerGas: 1000000,
       mining: {
         auto: false,
@@ -31,7 +31,7 @@ const config: HardhatUserConfig = {
       accounts: [
         '0xb501fc5879f214ee8be2832e43955ac0f19e20d1f7e33436d6746ac889dc043d',
       ],
-      chainId: 2152,
+      chainId: 1204,
     },
     testnet: {
       url: 'https://prod-testnet.prod.findora.org:8545',

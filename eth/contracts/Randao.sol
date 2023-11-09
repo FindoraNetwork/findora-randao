@@ -69,10 +69,10 @@ contract Randao is IRandao {
         timeLineCheck(_bnum, _commitBalkline, _commitDeadline)
         returns (uint256 _campaignID)
     {
-        uint256 maxParticipant = _deposit < msg.value
-            ? _deposit / _maxTxFee / 4
-            : msg.value / _maxTxFee / 4;
-        require(maxParticipant > 0, "_deposit or bounty is too less!!!");
+        uint256 maxParticipant = _deposit / _maxTxFee / 4;
+
+        require(msg.value >= _deposit, "bounty is too less2");
+        require(maxParticipant / 4 > 0, "_deposit is too less2!!!");
 
         _campaignID = _numCampaigns++;
         Campaign storage c = campaigns[_campaignID];
